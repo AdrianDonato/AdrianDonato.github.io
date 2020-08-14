@@ -1,0 +1,94 @@
+footer.ac_action,footer.ec_action,footer.oc_action,footer.wc_action,footer.cc_action{
+    display: grid;
+    grid-template-columns: 100px 100px;
+    grid-template-rows: 100px;
+}
+
+div.add_educ_button:hover,div.add_org_button:hover,div.add_work_button:hover,div.add_cont_button:hover{
+    text-decoration:underline;
+}
+
+div.ac_edit,footer.ec_action,footer.oc_action,footer.wc_action,footer.cc_action,div.add_educ_button,div.add_org_button,
+div.add_work_button,div.add_cont_button{
+    margin-top:10px;
+    color:cornflowerblue;
+}
+
+div.ac_edit,div.add_educ_button,div.add_org_button,div.add_work_button,div.add_cont_button{
+    font-weight:700;
+}
+
+div.ac_edit:hover,div.ec_edit:hover,div.oc_edit:hover,div.wc_edit:hover,div.cc_edit:hover,div.ec_delete:hover,
+div.oc_delete:hover,div.wc_delete:hover,div.cc_delete:hover{
+    text-decoration:underline;
+}
+
+div.loginbox,div.about_edit_div,div.education_add_div,div.education_edit_div,div.organization_add_div,div.organization_edit_div,
+div.work_add_div,div.work_edit_div,div.contact_add_div,div.contact_edit_div{
+    position:absolute;
+    text-align:center;
+    top:30%;
+    left:50%;
+    z-index;15;
+    background-color: white;
+    width: 400px;
+    height: 250px;
+    margin:-100px 0 0 -200px;
+    padding:30px;
+}
+
+div.education_add_div,div.education_edit_div,div.organization_add_div,div.organization_edit_div{
+    height: 400px;
+}
+
+div.work_add_div,div.work_edit_div{
+    height: 350px;
+}
+
+div.contact_add_div,div.contact_edit_div{
+    height: 275px;
+}
+
+form input[type="submit"]{
+    background-color:#865845;
+    color:white;
+    font-size: 15px;
+    font-weight:700;
+    border:none;
+    height:50px;
+    width:360px;
+    margin-top:30px;
+    outline:none;
+}
+
+div.back_button{
+    background-color:#9b9b9b;
+    color:white;
+    font-size: 15px;
+    font-weight:700;
+    height:50px;
+    width:360px;
+    margin:auto;
+    margin-top:10px;
+    outline:none;
+    box-sizing:border-box;
+    padding-top:15px;
+}
+
+div.back_button:hover{
+    background-color:#b3b3b3;
+}
+
+div.loginbox form input[type=email], div.loginbox form input[type=password],form input[type=text], form input[type=number]{
+    height:50px;
+    width:360px;
+    margin-top:10px;
+    padding:10px;
+}
+
+form input[type="submit"]:hover{
+    background-color:#9b7255;
+}
+
+
+

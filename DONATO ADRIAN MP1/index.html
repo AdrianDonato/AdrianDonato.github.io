@@ -1,0 +1,235 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="main.css">
+        <script src="jquery.js"></script>
+        
+        
+        
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/7.17.2/firebase-app.js"></script>
+
+        <!-- TODO: Add SDKs for Firebase products that you want to use
+             https://firebase.google.com/docs/web/setup#available-libraries -->
+        <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-firestore.js"></script>
+        
+        <script>
+            $(document).ready(function(){
+                var introTimeTxt;
+                var currTime = new Date().getHours()
+                if (currTime >= 4 && currTime <= 10){
+                    $("div.intro_text").text("Good Morning! My name is Adrian Donato")}
+                else if (currTime >= 11 && currTime <= 13 ){
+                    $("div.intro_text").text("Good Day! My name is Adrian Donato")}
+                else if (currTime >= 14 && currTime <= 17 ){
+                    $("div.intro_text").text("Good Afternoon! My name is Adrian Donato")}
+                else {
+                    $("div.intro_text").text("Good Evening! My name is Adrian Donato")}
+            });
+        </script>
+        
+        <script>
+            
+            // Your web app's Firebase configuration
+            var firebaseConfig = {
+                apiKey: "AIzaSyD5FCcwNTE-7NAyuplnFwTzkb6w5NYovfw",
+                authDomain: "ccapdev-mp1-website-resume.firebaseapp.com",
+                databaseURL: "https://ccapdev-mp1-website-resume.firebaseio.com",
+                projectId: "ccapdev-mp1-website-resume",
+                storageBucket: "ccapdev-mp1-website-resume.appspot.com",
+                messagingSenderId: "258661877344",
+                appId: "1:258661877344:web:1ad4e730ea8b80516da505"
+            };
+            
+            // Initialize Firebase
+            var defaultProject = firebase.initializeApp(firebaseConfig);
+            var db = firebase.firestore();
+            var read_data;
+            
+            
+            db.collection("others").doc("gOm20pEMeGUlYzMqoS2H").get().then(function(snapshot){
+                read_data = snapshot.data()
+                var aboutText = document.createElement("div")
+                $(aboutText).text(read_data.about_text)
+                $("div.about_box").append(aboutText)
+            })
+            
+            db.collection("educations").get().then(function(snapshot){
+                snapshot.forEach(function(doc){
+                    read_data = doc.data();
+                    
+                    var educArticle = document.createElement("article")
+                    var educSchool = document.createElement("div")
+                    var educAttain = document.createElement("div")
+                    var educYStart = document.createElement("div")
+                    var educYEnd = document.createElement("div")
+                    
+                    $(educSchool).text(read_data.school_name)
+                    $(educAttain).text(read_data.attainment)
+                    $(educYStart).text("from " + read_data.year_start)
+                    $(educYEnd).text("to " + read_data.year_end)
+                    
+                    $(educArticle).addClass("educContainer")
+                    $(educSchool).addClass("ec_school_name")
+                    $(educAttain).addClass("ec_attainment")
+                    $(educYStart).addClass("ec_year_start")
+                    $(educYEnd).addClass("ec_year_end")
+                    
+                    $(educArticle).append(educSchool)
+                    $(educArticle).append(educAttain)
+                    $(educArticle).append(educYStart)
+                    $(educArticle).append(educYEnd)
+                    
+                    $("div.education_list").append(educArticle)
+                })
+            });
+            
+            db.collection("organizations").get().then(function(snapshot){
+                snapshot.forEach(function(doc){
+                    read_data = doc.data();
+                    
+                    var orgArticle = document.createElement("article")
+                    var orgName = document.createElement("div")
+                    var orgPosition = document.createElement("div")
+                    var orgYStart = document.createElement("div")
+                    var orgYEnd = document.createElement("div")
+                    
+                    $(orgName).text(read_data.org_name)
+                    $(orgPosition).text(read_data.position)
+                    $(orgYStart).text("from " + read_data.year_start)
+                    $(orgYEnd).text("to " + read_data.year_end)
+                    
+                    $(orgArticle).addClass("orgContainer")
+                    $(orgName).addClass("oc_org_name")
+                    $(orgPosition).addClass("oc_position")
+                    $(orgYStart).addClass("oc_year_start")
+                    $(orgYEnd).addClass("oc_year_end")
+                    
+                    $(orgArticle).append(orgName)
+                    $(orgArticle).append(orgPosition)
+                    $(orgArticle).append(orgYStart)
+                    $(orgArticle).append(orgYEnd)
+                    
+                    $("div.organization_list").append(orgArticle)
+                })
+            });
+            
+            db.collection("works").get().then(function(snapshot){
+               snapshot.forEach(function(doc){
+                   read_data = doc.data();
+                   
+                   var workArticle = document.createElement("article")
+                   var workName = document.createElement("div")
+                   var workDesc = document.createElement("div")
+                   var workSubj = document.createElement("div")
+                   
+                   $(workName).text(read_data.name)
+                   $(workDesc).text(read_data.description)
+                   $(workSubj).text(read_data.subject)
+                   
+                   $(workArticle).addClass("workContainer")
+                   $(workName).addClass("wc_name")
+                   $(workDesc).addClass("wc_desc")
+                   $(workSubj).addClass("wc_subj")
+                   
+                   $(workArticle).append(workName)
+                   $(workArticle).append(workDesc)
+                   $(workArticle).append(workSubj)
+                   
+                   $("div.work_list").append(workArticle)
+               }) 
+            });
+            
+            db.collection("links").get().then(function(snapshot){
+               snapshot.forEach(function(doc){
+                   read_data = doc.data();
+                   
+                   var contArticle = document.createElement("article")
+                   var contLink = document.createElement("a")
+                   
+                   $(contLink).text(read_data.website)
+                   $(contLink).attr("href", read_data.link)
+                   
+                   $(contArticle).addClass("contactContainer")
+                   $(contLink).addClass("cc_link")
+                   
+                   $(contArticle).append(contLink)
+                   
+                   $("div.contact_list").append(contArticle)
+               }) 
+            });
+            
+        </script>
+        
+        <title>a resume</title>
+    </head>
+    <body>
+       <main> 
+            <section class="intro_section">
+                <div class="intro_text">
+                    
+                </div>
+            </section>
+           
+           <section class="about_section">
+               <h2>About Me</h2>
+               <div class="about_box"></div>
+           </section>
+           
+            <section class="education_section">
+                <h2>Education</h2>
+
+                <div class="education_list">
+                    <!--
+                    <article class="educContainer">
+                        <div class="ec_school_name">King's Montessori School</div>
+                        <div class="ec_attainment">Elementary School</div>
+                        <div class="ec_year_start">2006</div>
+                        <div class="ec_year_end">2012</div>
+                    </article>
+                    -->
+                </div> 
+            </section>
+
+            <section class="organization_section">
+                <h2>Organizations</h2>
+                <div class="organization_list">
+                    <!--
+                    <article class="orgContainer">
+                        <div class="oc_org_name">King's Montessori School</div>
+                        <div class="oc_position">Elementary School</div>
+                        <div class="oc_year_start">2006</div>
+                        <div class="oc_year_end">2012</div>
+                    </article>
+                    -->
+                </div>
+            </section>
+
+            <section class="work_section">
+                <h2>Created Projects</h2>
+
+                <div class="work_list">
+                    <!--
+                    <article class="workContainer">
+                        <div class="wc_name"></div>
+                        <div class="wc_desc"></div>
+                        <div class="wc_subj"></div>
+                    </article>
+                    -->
+                </div>
+            </section>
+           
+           <section class="contact_section">
+                <h2>Links</h2>
+                
+                <div class="contact_list">
+                    <!--
+                    <article class="contactContainer">
+                        <div class="cc_sitename"></div>
+                        <div class="cc_link"></div>
+                    </article>
+                    -->
+                </div>
+           </section>
+        </main>   
+    </body>
+</html>

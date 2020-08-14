@@ -1,0 +1,829 @@
+<!-- EDIT PAGE -->
+<html>
+    <head>
+        <link rel="stylesheet" href="main.css">
+        <link rel="stylesheet" href="edit.css">
+        <script src="jquery.js"></script>
+        
+        
+        
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/7.17.2/firebase-app.js"></script>
+
+        <!-- TODO: Add SDKs for Firebase products that you want to use
+             https://firebase.google.com/docs/web/setup#available-libraries -->
+        <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-firestore.js"></script>
+        
+        <script>
+            $(document).ready(function(){
+                var introTimeTxt;
+                var currTime = new Date().getHours()
+                if (currTime >= 4 && currTime <= 10){
+                    $("div.intro_text").text("Good Morning! My name is Adrian Donato")}
+                else if (currTime >= 11 && currTime <= 13 ){
+                    $("div.intro_text").text("Good Day! My name is Adrian Donato")}
+                else if (currTime >= 14 && currTime <= 17 ){
+                    $("div.intro_text").text("Good Afternoon! My name is Adrian Donato")}
+                else {
+                    $("div.intro_text").text("Good Evening! My name is Adrian Donato")}
+            });
+        </script>
+        
+        <script>
+            $(document).ready(function(){
+                // Your web app's Firebase configuration
+                var firebaseConfig = {
+                    apiKey: "AIzaSyD5FCcwNTE-7NAyuplnFwTzkb6w5NYovfw",
+                    authDomain: "ccapdev-mp1-website-resume.firebaseapp.com",
+                    databaseURL: "https://ccapdev-mp1-website-resume.firebaseio.com",
+                    projectId: "ccapdev-mp1-website-resume",
+                    storageBucket: "ccapdev-mp1-website-resume.appspot.com",
+                    messagingSenderId: "258661877344",
+                    appId: "1:258661877344:web:1ad4e730ea8b80516da505"
+                };
+
+                // Initialize Firebase
+                var defaultProject = firebase.initializeApp(firebaseConfig);
+                var db = firebase.firestore();
+                var read_data;
+                var opened_window;
+                var editsubmit_id; 
+                
+                $("main").hide();
+                $("div.education_add_div").hide();
+                $("div.organization_add_div").hide();
+                $("div.work_add_div").hide();
+                $("div.contact_add_div").hide();
+                
+                $("div.about_edit_div").hide();
+                $("div.education_edit_div").hide();
+                $("div.organization_edit_div").hide();
+                $("div.work_edit_div").hide();
+                $("div.contact_edit_div").hide();
+                
+                $("#login_error").hide();
+                
+                $("form#loginform").submit(function(e){
+                    e.preventDefault();
+                    var lfEmail = $("input#email").val()
+                    var lfPass = $("input#password").val()
+                    
+                    firebase.auth().signInWithEmailAndPassword(lfEmail, lfPass).then(function(result){
+                        $("div.loginbox").hide();
+                        loadData();
+                        $("main").show();
+                    }).catch(function(error){
+                        var errorCode = error.code;
+                        var errorMsg = error.message;
+                        console.log(errorCode + ": " + errorMsg)
+                        $("#login_error").show();
+                    })
+                })
+                
+                $("form#educ_addform").submit(function(e){
+                    e.preventDefault();
+                    var school_name = $("input#ef_schoolname").val()
+                    var school_attain = $("input#ef_attainment").val()
+                    var school_ystart = $("input#ef_yearstart").val()
+                    var school_yend = $("input#ef_yearend").val()
+                    
+                    firebase.firestore().collection("educations").add({
+                        school_name: school_name,
+                        attainment: school_attain,
+                        year_start: school_ystart,
+                        year_end: school_yend
+                    }).then(function(result){
+                        console.log(result)
+                        $("div.education_add_div").hide()
+                        
+                        $("input#ef_schoolname").val("")
+                        $("input#ef_attainment").val("")
+                        $("input#ef_yearstart").val("")
+                        $("input#ef_yearend").val("")
+                        
+                        loadData();
+                        $("main").show()
+                    }).catch(function(error){
+                        console.error("Error writting into database", error)
+                    })
+                })
+                
+                $("form#org_addform").submit(function(e){
+                    e.preventDefault();
+                    var organization_name = $("input#of_orgname").val()
+                    var organization_position = $("input#of_position").val()
+                    var organization_ystart = $("input#of_yearstart").val()
+                    var organization_yend = $("input#of_yearend").val()
+                    
+                    firebase.firestore().collection("organizations").add({
+                        org_name: organization_name,
+                        position: organization_position,
+                        year_start: organization_ystart,
+                        year_end: organization_yend
+                    }).then(function(result){
+                        console.log(result)
+                        $("div.organization_add_div").hide()
+                        
+                        $("input#of_orgname").val("")
+                        $("input#of_position").val("")
+                        $("input#of_yearstart").val("")
+                        $("input#of_yearend").val("")
+                        
+                        loadData();
+                        $("main").show()
+                    }).catch(function(error){
+                        console.error("Error writting into database", error)
+                    })
+                })
+                
+                $("form#work_addform").submit(function(e){
+                    e.preventDefault();
+                    var work_name = $("input#wf_workname").val()
+                    var work_description = $("input#wf_workdesc").val()
+                    var work_subject = $("input#wf_worksubj").val()
+            //        var organization_yend = $("input#of_yearend").val()
+                    
+                    firebase.firestore().collection("works").add({
+                        name: work_name,
+                        description: work_description,
+                        subject: work_subject
+                    }).then(function(result){
+                        console.log(result)
+                        $("div.work_add_div").hide()
+                        
+                        $("input#wf_workname").val("")
+                        $("input#wf_workdesc").val("")
+                        $("input#wf_worksubj").val("")
+                        
+                        loadData();
+                        $("main").show()
+                    }).catch(function(error){
+                        console.error("Error writting into database", error)
+                    })
+                })
+                
+                $("form#cont_addform").submit(function(e){
+                    e.preventDefault();
+                    var website_name = $("input#cf_webname").val()
+                    var website_link = $("input#cf_weblink").val()
+                    
+                    firebase.firestore().collection("links").add({
+                        website: website_name,
+                        link: website_link
+                    }).then(function(result){
+                        console.log(result)
+                        $("div.contact_add_div").hide()
+                        
+                        $("input#cf_webname").val("")
+                        $("input#cf_weblink").val("")
+                        
+                        loadData();
+                        $("main").show()
+                    }).catch(function(error){
+                        console.error("Error writting into database", error)
+                    })
+                })
+                
+                $("div.back_button").click(function(){
+                    $(opened_window).hide();
+                    $("main").show();
+                })
+                
+                $("div.add_educ_button").click(function(){
+                    $("main").hide();
+                    $("div.education_add_div").show();
+                    opened_window = "div.education_add_div";
+                })
+                
+                $("div.add_org_button").click(function(){
+                    $("main").hide();
+                    $("div.organization_add_div").show();
+                    opened_window = "div.organization_add_div";
+                })
+                
+                $("div.add_work_button").click(function(){
+                    $("main").hide();
+                    $("div.work_add_div").show();
+                    opened_window = "div.work_add_div";
+                })
+                
+                $("div.add_cont_button").click(function(){
+                    $("main").hide();
+                    $("div.contact_add_div").show();
+                    opened_window = "div.contact_add_div";
+                })
+                
+                $(document).on("click", "div.ec_delete", function(){
+                    uid_deleted = ($(this).attr("data-uid"))
+                    firebase.firestore().collection("educations").doc(uid_deleted).delete()
+                    .then(function(){
+                        console.log("deleted: " + uid_deleted)
+                        loadData()
+                    }).catch(function(error){
+                        console.log("error deleting document ", error)
+                    })
+                })
+                
+                $(document).on("click", "div.oc_delete", function(){
+                    uid_deleted = ($(this).attr("data-uid"))
+                    firebase.firestore().collection("organizations").doc(uid_deleted).delete()
+                    .then(function(){
+                        console.log("deleted: " + uid_deleted)
+                        loadData()
+                    }).catch(function(error){
+                        console.log("error deleting document ", error)
+                    })
+                })
+                
+                $(document).on("click", "div.wc_delete", function(){
+                    uid_deleted = ($(this).attr("data-uid"))
+                    firebase.firestore().collection("works").doc(uid_deleted).delete()
+                    .then(function(){
+                        console.log("deleted: " + uid_deleted)
+                        loadData()
+                    }).catch(function(error){
+                        console.log("error deleting document ", error)
+                    })
+                })
+                
+                $(document).on("click", "div.cc_delete", function(){
+                    uid_deleted = ($(this).attr("data-uid"))
+                    firebase.firestore().collection("links").doc(uid_deleted).delete()
+                    .then(function(){
+                        console.log("deleted: " + uid_deleted)
+                        loadData()
+                    }).catch(function(error){
+                        console.log("error deleting document ", error)
+                    })
+                })
+                
+                $(document).on("click", "div.ac_edit", function(){
+                    $("main").hide()
+                    $("div.about_edit_div").show()
+                    opened_window = "div.about_edit_div"
+                    
+                    firebase.firestore().collection("others").doc("gOm20pEMeGUlYzMqoS2H").get().then(function(snapshot){
+                        read_data = snapshot.data();
+                        
+                        $("input#af_about_edit").val(read_data.about_text);
+                    })
+                })
+                
+                $(document).on("click", "div.ec_edit", function(){
+                    uid_edited = ($(this).attr("data-uid"))
+                    $("main").hide()
+                    $("div.education_edit_div").show()
+                    opened_window = "div.education_edit_div"
+                    editsubmit_id = uid_edited;
+                    
+                    firebase.firestore().collection("educations").doc(uid_edited).get().then(function(snapshot){
+                        read_data = snapshot.data();
+                        
+                        $("input#ef_schoolname_edit").val(read_data.school_name);
+                        $("input#ef_attainment_edit").val(read_data.attainment);
+                        $("input#ef_yearstart_edit").val(read_data.year_start);
+                        $("input#ef_yearend_edit").val(read_data.year_end);
+                    })
+                })
+                
+                $(document).on("click", "div.oc_edit", function(){
+                    uid_edited = ($(this).attr("data-uid"))
+                    $("main").hide()
+                    $("div.organization_edit_div").show()
+                    opened_window = "div.organization_edit_div"
+                    editsubmit_id = uid_edited;
+                    
+                    firebase.firestore().collection("organizations").doc(uid_edited).get().then(function(snapshot){
+                        read_data = snapshot.data();
+                        
+                        $("input#of_orgname_edit").val(read_data.org_name);
+                        $("input#of_position_edit").val(read_data.position);
+                        $("input#of_yearstart_edit").val(read_data.year_start);
+                        $("input#of_yearend_edit").val(read_data.year_end);
+                    })
+                })
+                
+                $(document).on("click", "div.wc_edit", function(){
+                    uid_edited = ($(this).attr("data-uid"))
+                    $("main").hide()
+                    $("div.work_edit_div").show()
+                    opened_window = "div.work_edit_div"
+                    editsubmit_id = uid_edited;
+                    
+                    firebase.firestore().collection("works").doc(uid_edited).get().then(function(snapshot){
+                        read_data = snapshot.data();
+                        
+                        $("input#wf_workname_edit").val(read_data.name);
+                        $("input#wf_workdesc_edit").val(read_data.description);
+                        $("input#wf_worksubj_edit").val(read_data.subject);
+                    })
+                })
+                
+                $(document).on("click", "div.cc_edit", function(){
+                    uid_edited = ($(this).attr("data-uid"))
+                    $("main").hide()
+                    $("div.contact_edit_div").show()
+                    opened_window = "div.contact_edit_div"
+                    editsubmit_id = uid_edited;
+                    
+                    firebase.firestore().collection("links").doc(uid_edited).get().then(function(snapshot){
+                        read_data = snapshot.data();
+                        
+                        $("input#cf_webname_edit").val(read_data.website);
+                        $("input#cf_weblink_edit").val(read_data.link);
+                    })
+                })
+                
+                $("form#educ_editform").submit(function(e){
+                    e.preventDefault();
+                    var schoolname_edit = $("input#ef_schoolname_edit").val()
+                    var attainment_edit = $("input#ef_attainment_edit").val()
+                    var yearstart_edit = $("input#ef_yearstart_edit").val()
+                    var yearend_edit = $("input#ef_yearend_edit").val()
+                    
+                    firebase.firestore().collection("educations").doc(editsubmit_id).set({
+                        school_name: schoolname_edit,
+                        attainment: attainment_edit,
+                        year_start: yearstart_edit,
+                        year_end: yearend_edit
+                    }).then(function(result){
+                        console.log("successfully edited " + editsubmit_id)
+                        $("div.education_edit_div").hide()
+                        loadData();
+                        $("main").show()
+                    }).catch(function(error){
+                        console.error("Error editing into database: ", error)
+                    })
+                })
+                
+                $("form#about_editform").submit(function(e){
+                    e.preventDefault();
+                    var about_edit = $("input#af_about_edit").val()
+                    
+                    firebase.firestore().collection("others").doc("gOm20pEMeGUlYzMqoS2H").set({
+                        about_text: about_edit
+                    }).then(function(result){
+                        console.log("successfully edited " + "gOm20pEMeGUlYzMqoS2H")
+                        $("div.about_edit_div").hide()
+                        loadData();
+                        $("main").show()
+                    }).catch(function(error){
+                        console.error("Error editing into database: ", error)
+                    })
+                })
+                
+                $("form#org_editform").submit(function(e){
+                    e.preventDefault();
+                    var orgname_edit = $("input#of_orgname_edit").val()
+                    var position_edit = $("input#of_position_edit").val()
+                    var yearstart_edit = $("input#of_yearstart_edit").val()
+                    var yearend_edit = $("input#of_yearend_edit").val()
+                    
+                    firebase.firestore().collection("organizations").doc(editsubmit_id).set({
+                        org_name: orgname_edit,
+                        position: position_edit,
+                        year_start: yearstart_edit,
+                        year_end: yearend_edit
+                    }).then(function(result){
+                        console.log("successfully edited " + editsubmit_id)
+                        $("div.organization_edit_div").hide()
+                        loadData();
+                        $("main").show()
+                    }).catch(function(error){
+                        console.error("Error editing into database: ", error)
+                    })
+                })
+                
+                $("form#work_editform").submit(function(e){
+                    e.preventDefault();
+                    var workname_edit = $("input#wf_workname_edit").val()
+                    var description_edit = $("input#wf_workdesc_edit").val()
+                    var subject_edit = $("input#wf_worksubj_edit").val()
+                    
+                    firebase.firestore().collection("works").doc(editsubmit_id).set({
+                        name: workname_edit,
+                        description: description_edit,
+                        subject: subject_edit,
+                    }).then(function(result){
+                        console.log("successfully edited " + editsubmit_id)
+                        $("div.work_edit_div").hide()
+                        loadData();
+                        $("main").show()
+                    }).catch(function(error){
+                        console.error("Error editing into database: ", error)
+                    })
+                })
+                
+                $("form#cont_editform").submit(function(e){
+                    e.preventDefault();
+                    var webname_edit = $("input#cf_webname_edit").val()
+                    var weblink_edit = $("input#cf_weblink_edit").val()
+                    
+                    firebase.firestore().collection("links").doc(editsubmit_id).set({
+                        website: webname_edit,
+                        link: weblink_edit
+                    }).then(function(result){
+                        console.log("successfully edited " + editsubmit_id)
+                        $("div.contact_edit_div").hide()
+                        loadData();
+                        $("main").show()
+                    }).catch(function(error){
+                        console.error("Error editing into database: ", error)
+                    })
+                })
+                
+                function loadData(){
+                    
+                    $("div.about_box").empty()
+                    db.collection("others").doc("gOm20pEMeGUlYzMqoS2H").get().then(function(snapshot){
+                        read_data = snapshot.data()
+                        var aboutText = document.createElement("div")
+                        
+                        var aboutFooter = document.createElement("footer")
+                        var aboutEdit = document.createElement("div")
+                        
+                        $(aboutFooter).addClass("ac_action")
+                        $(aboutEdit).addClass("ac_edit")
+                        $(aboutEdit).text("edit")
+                        
+                        $(aboutFooter).append(aboutEdit)
+                        
+                        $(aboutText).text(read_data.about_text)
+                        $("div.about_box").append(aboutText)
+                        $("div.about_box").append(aboutFooter)
+                        
+                    })
+                    
+                    $("div.education_list").empty()
+                    db.collection("educations").get().then(function(snapshot){
+                        snapshot.forEach(function(doc){
+                            read_data = doc.data();
+
+                            var educArticle = document.createElement("article")
+                            var educSchool = document.createElement("div")
+                            var educAttain = document.createElement("div")
+                            var educYStart = document.createElement("div")
+                            var educYEnd = document.createElement("div")
+                            
+                            var educFooter = document.createElement("footer")
+                            var educEdit = document.createElement("div")
+                            var educDelete = document.createElement("div")
+
+                            $(educSchool).text(read_data.school_name)
+                            $(educAttain).text(read_data.attainment)
+                            $(educYStart).text("from " + read_data.year_start)
+                            $(educYEnd).text("to " + read_data.year_end)
+
+                            $(educArticle).addClass("educContainer")
+                            $(educSchool).addClass("ec_school_name")
+                            $(educAttain).addClass("ec_attainment")
+                            $(educYStart).addClass("ec_year_start")
+                            $(educYEnd).addClass("ec_year_end")
+                            
+                            $(educFooter).addClass("ec_action")
+                            $(educEdit).addClass("ec_edit")
+                            $(educDelete).addClass("ec_delete")
+                            
+                            $(educEdit).text("edit")
+                            $(educEdit).attr("data-uid", doc.id)
+                            
+                            $(educDelete).text("delete")
+                            $(educDelete).attr("data-uid", doc.id)
+                            
+                            $(educFooter).append(educEdit)
+                            $(educFooter).append(educDelete)
+                            
+                            $(educArticle).append(educSchool)
+                            $(educArticle).append(educAttain)
+                            $(educArticle).append(educYStart)
+                            $(educArticle).append(educYEnd)
+                            $(educArticle).append(educFooter)
+                            
+
+                            $("div.education_list").append(educArticle)
+                        })
+                    });
+                    
+                    $("div.organization_list").empty()
+                    db.collection("organizations").get().then(function(snapshot){
+                        snapshot.forEach(function(doc){
+                            read_data = doc.data();
+
+                            var orgArticle = document.createElement("article")
+                            var orgName = document.createElement("div")
+                            var orgPosition = document.createElement("div")
+                            var orgYStart = document.createElement("div")
+                            var orgYEnd = document.createElement("div")
+                            
+                            var orgFooter = document.createElement("footer")
+                            var orgEdit = document.createElement("div")
+                            var orgDelete = document.createElement("div")
+
+                            $(orgName).text(read_data.org_name)
+                            $(orgPosition).text(read_data.position)
+                            $(orgYStart).text("from " + read_data.year_start)
+                            $(orgYEnd).text("to " + read_data.year_end)
+
+                            $(orgArticle).addClass("orgContainer")
+                            $(orgName).addClass("oc_org_name")
+                            $(orgPosition).addClass("oc_position")
+                            $(orgYStart).addClass("oc_year_start")
+                            $(orgYEnd).addClass("oc_year_end")
+                            
+                            $(orgFooter).addClass("oc_action")
+                            $(orgEdit).addClass("oc_edit")
+                            $(orgDelete).addClass("oc_delete")
+                            
+                            $(orgEdit).text("edit")
+                            $(orgEdit).attr("data-uid", doc.id)
+                            
+                            $(orgDelete).text("delete")
+                            $(orgDelete).attr("data-uid", doc.id)
+                            
+                            $(orgFooter).append(orgEdit)
+                            $(orgFooter).append(orgDelete)
+
+                            $(orgArticle).append(orgName)
+                            $(orgArticle).append(orgPosition)
+                            $(orgArticle).append(orgYStart)
+                            $(orgArticle).append(orgYEnd)
+                            $(orgArticle).append(orgFooter)
+
+                            $("div.organization_list").append(orgArticle)
+                        })
+                    });
+                    
+                    $("div.work_list").empty();
+                    db.collection("works").get().then(function(snapshot){
+                       snapshot.forEach(function(doc){
+                           read_data = doc.data();
+
+                           var workArticle = document.createElement("article")
+                           var workName = document.createElement("div")
+                           var workDesc = document.createElement("div")
+                           var workSubj = document.createElement("div")
+                           
+                           var workFooter = document.createElement("footer")
+                           var workEdit = document.createElement("div")
+                           var workDelete = document.createElement("div")
+
+                           $(workName).text(read_data.name)
+                           $(workDesc).text(read_data.description)
+                           $(workSubj).text(read_data.subject)
+
+                           $(workArticle).addClass("workContainer")
+                           $(workName).addClass("wc_name")
+                           $(workDesc).addClass("wc_desc")
+                           $(workSubj).addClass("wc_subj")
+                           
+                           $(workFooter).addClass("wc_action")
+                           $(workEdit).addClass("wc_edit")
+                           $(workDelete).addClass("wc_delete")
+                            
+                           $(workEdit).text("edit")
+                           $(workEdit).attr("data-uid", doc.id)
+                            
+                           $(workDelete).text("delete")
+                           $(workDelete).attr("data-uid", doc.id)
+                            
+                           $(workFooter).append(workEdit)
+                           $(workFooter).append(workDelete)
+
+                           $(workArticle).append(workName)
+                           $(workArticle).append(workDesc)
+                           $(workArticle).append(workSubj)
+                           $(workArticle).append(workFooter)
+
+                           $("div.work_list").append(workArticle)
+                       }) 
+                    });
+                    
+                    $("div.contact_list").empty();
+                    db.collection("links").get().then(function(snapshot){
+                       snapshot.forEach(function(doc){
+                           read_data = doc.data();
+
+                           var contArticle = document.createElement("article")
+                           var contLink = document.createElement("a")
+                           
+                           var contFooter = document.createElement("footer")
+                           var contEdit = document.createElement("div")
+                           var contDelete = document.createElement("div")
+
+                           $(contLink).text(read_data.website)
+                           $(contLink).attr("href", read_data.link)
+
+                           $(contArticle).addClass("contactContainer")
+                           $(contLink).addClass("cc_link")
+                           
+                           $(contFooter).addClass("cc_action")
+                           $(contEdit).addClass("cc_edit")
+                           $(contDelete).addClass("cc_delete")
+                            
+                           $(contEdit).text("edit")
+                           $(contEdit).attr("data-uid", doc.id)
+                            
+                           $(contDelete).text("delete")
+                           $(contDelete).attr("data-uid", doc.id)
+                            
+                           $(contFooter).append(contEdit)
+                           $(contFooter).append(contDelete)
+
+                           $(contArticle).append(contLink)
+                           $(contArticle).append(contFooter)
+
+                           $("div.contact_list").append(contArticle)
+                       }) 
+                    });
+                }
+            });
+        </script>
+        
+        <title>edit a resume</title>
+    </head>
+    <body>
+       
+        <div class="loginbox">
+            <form id="loginform">
+                Please Log In:<br>
+                <input type="email" id="email" placeholder="email"><br>
+                <input type="password" id="password" placeholder="password"><br>
+                <input type="submit" value="login">
+                <div id="login_error">Incorrect username/password. Please enter again</div>
+            </form>
+        </div>
+        
+        <div class="education_add_div">
+            <form id="educ_addform">
+                Add Education:<br>
+                <input type="text" id="ef_schoolname" placeholder="School Name"><br>
+                <input type="text" id="ef_attainment" placeholder="Attainment (Ex. High School, BS-IT, etc.)"><br>
+                <input type="number" id="ef_yearstart" placeholder="Year Start"><br>
+                <input type="number" id="ef_yearend" placeholder="Year End"><br>
+                <input type="submit" value="add education"><br>
+                <div class="back_button">back</div>
+            </form>
+        </div>
+        
+        <div class="organization_add_div">
+            <form id="org_addform">
+                Add Organization:
+                <input type="text" id="of_orgname" placeholder="Organization Name"><br>
+                <input type="text" id="of_position" placeholder="Position"><br>
+                <input type="number" id="of_yearstart" placeholder="Year Start"><br>
+                <input type="number" id="of_yearend" placeholder="Year End"><br>
+                <input type="submit" value="add organization"><br>
+                <div class="back_button">back</div>
+            </form>
+        </div>
+        
+        <div class="work_add_div">
+            <form id="work_addform">
+                Add Project:
+                <input type="text" id="wf_workname" placeholder="Project Name"><br>
+                <input type="text" id="wf_workdesc" placeholder="Project Description"><br>
+                <input type="text" id="wf_worksubj" placeholder="Project Subject"><br>
+        <!--    <input type="number" id="wf_workyear" placeholder="Year Created"> -->
+                <input type="submit" value="add project"><br>
+                <div class="back_button">back</div>
+            </form>
+        </div>
+        
+        <div class="contact_add_div">
+            <form id="cont_addform">
+                Add Contact:
+                <input type="text" id="cf_webname" placeholder="Website Name"><br>
+                <input type="text" id="cf_weblink" placeholder="Website Link"><br>
+                <input type="submit" value="add contact"><br>
+                <div class="back_button">back</div>
+            </form>
+        </div>
+        
+        <div class="about_edit_div">
+            <form id="about_editform">
+                Edit 'About' Paragraph:
+                <input type="text" id="af_about_edit"><br>
+                <input type="submit" value="edit about information"><br>
+                <div class="back_button">back</div>
+            </form>
+        </div>
+        
+        <div class="education_edit_div">
+            <form id="educ_editform">
+                Edit Education:
+                <input type="text" id="ef_schoolname_edit" placeholder="School Name"><br>
+                <input type="text" id="ef_attainment_edit" placeholder="Attainment (Ex. High School, BS-IT, etc.)"><br>
+                <input type="number" id="ef_yearstart_edit" placeholder="Year Start"><br>
+                <input type="number" id="ef_yearend_edit" placeholder="Year End"><br>
+                <input type="submit" value="edit education"><br>
+                <div class="back_button">back</div>
+            </form>
+        </div>
+        
+        <div class="organization_edit_div">
+            <form id="org_editform">
+                Edit Organization:
+                <input type="text" id="of_orgname_edit" placeholder="Organization Name">
+                <input type="text" id="of_position_edit" placeholder="Position">
+                <input type="number" id="of_yearstart_edit" placeholder="Year Start">
+                <input type="number" id="of_yearend_edit" placeholder="Year End">
+                <input type="submit" value="edit organization">
+                <div class="back_button">back</div>
+            </form>
+        </div>
+        
+        <div class="work_edit_div">
+            <form id="work_editform">
+                Edit Project:
+                <input type="text" id="wf_workname_edit" placeholder="Project Name">
+                <input type="text" id="wf_workdesc_edit" placeholder="Project Description">
+                <input type="text" id="wf_worksubj_edit" placeholder="Project Subject">
+        <!--    <input type="number" id="wf_workyear" placeholder="Year Created"> -->
+                <input type="submit" value="edit project">
+                <div class="back_button">back</div>
+            </form>
+        </div>
+        
+        <div class="contact_edit_div">
+            <form id="cont_editform">
+                Edit Contact:
+                <input type="text" id="cf_webname_edit" placeholder="Website Name">
+                <input type="text" id="cf_weblink_edit" placeholder="Website Link">
+                <input type="submit" value="edit contact">
+                <div class="back_button">back</div>
+            </form>
+        </div>
+        
+        <main>
+    
+            <section class="intro_section">
+                <div class="intro_text">
+                    
+                </div>
+            </section>
+            
+            <section class="about_section">
+               <h2>About Me</h2>
+               <div class="about_box"></div>
+           </section>
+
+            <section class="education_section">
+                <h2>Education</h2>
+                <div class="add_educ_button"><h3>ADD</h3></div>
+                <div class="education_list">
+                    <!--
+                    <article class="educContainer">
+                        <div class="ec_school_name">King's Montessori School</div>
+                        <div class="ec_attainment">Elementary School</div>
+                        <div class="ec_year_start">2006</div>
+                        <div class="ec_year_end">2012</div>
+                    </article>
+                    -->
+                </div> 
+            </section>
+
+            <section class="organization_section">
+                <h2>Organizations</h2>
+                <div class="add_org_button"><h3>ADD</h3></div>
+                <div class="organization_list">
+                    <!--
+                    <article class="orgContainer">
+                        <div class="oc_org_name">King's Montessori School</div>
+                        <div class="oc_position">Elementary School</div>
+                        <div class="oc_year_start">2006</div>
+                        <div class="oc_year_end">2012</div>
+                    </article>
+                    -->
+                </div>
+            </section>
+
+            <section class="work_section">
+                <h2>Created Projects</h2>
+                <div class="add_work_button"><h3>ADD</h3></div>    
+                <div class="work_list">
+                    <!--
+                    <article class="workContainer">
+                        <div class="wc_name"></div>
+                        <div class="wc_desc"></div>
+                        <div class="wc_subj"></div>
+                    </article>
+                    -->
+                </div>
+            </section>
+            
+            <section class="contact_section">
+                <h2>Contact Links</h2>
+                <div class="add_cont_button"><h3>ADD</h3></div>
+                <div class="contact_list">
+                    <!--
+                    <article class="contactContainer">
+                        <div class="cc_sitename"></div>
+                        <div class="cc_link"></div>
+                    </article>
+                    -->
+                </div>
+           </section>
+        </main>   
+    </body>
+</html>
