@@ -22,7 +22,7 @@ section.about_section,section.education_section,section.organization_section,sec
 }
 
 section.intro_section{
-    background-image:url("../media/intro-background.jpg");
+    background-image:url("https://adriandonato.github.io/DONATO%20ADRIAN%20MP1/media/intro-background.jpg");
     background-size:cover;
     height:784px;
     padding-bottom:0px;
