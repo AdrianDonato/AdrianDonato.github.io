@@ -41,7 +41,7 @@ if(multifile) {
 var isLiquid = (pageMode.indexOf('liquid') != -1), flip = (pageMode.indexOf('flip') != -1) && !multifile;
 var arrowNav = true;
 var lazyLoad = true;
-var scaleMode = 'best_desktop';
+var scaleMode = 'best_all';
 var webAppType = '';
 var useTracker = false;
 var shareInfo = {btns:[], align:"left"};
